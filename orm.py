@@ -1,3 +1,4 @@
+import json
 import random
 import math
 import tkinter as tk
@@ -36,6 +37,9 @@ class Persona():
             self.direccion += math.pi
 def guardar_personas():
     print("Guardado")
+    cadena = json.dumps([vars(persona) for persona in personas])
+    archivo = open("jugadores.json",'w')
+    archivo.write(cadena)
 
 # Creo ventana
 raiz = tk.Tk()
