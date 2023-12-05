@@ -33,13 +33,19 @@ class Persona():
         self.posy += math.sin(self.direccion)
     def rebote(self):
         if self.posx < 0 or self.posx > 720 or self.posy < 0 or self.posy > 720:
-            self.direccion += 180
+            self.direccion += math.pi
+def guardar_personas():
+    print("Guardado")
 
 # Creo ventana
 raiz = tk.Tk()
 # Creo un lienzo en esa ventana
 lienzo = tk.Canvas(raiz,width=720,height=720)
 lienzo.pack()
+
+# creo un botón para guardar
+boton = tk.Button(raiz, text="Guardar",command = guardar_personas)
+boton.pack()
 # Creo todo el número de personas y las dibujo
 for i in range(0,numeropersonas):
     personas.append(Persona())
