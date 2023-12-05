@@ -23,11 +23,17 @@ class Persona():
             self.posy + self.radio/2,
             fill = self.color)
     def mueve(self):
+        self.rebote()
         lienzo.move(
             self.entidad,
             math.cos(self.direccion),
             math.sin(self.direccion)
             )
+        self.posx += math.cos(self.direccion)
+        self.posy += math.sin(self.direccion)
+    def rebote(self):
+        if self.posx < 0 or self.posx > 720 or self.posy < 0 or self.posy > 720:
+            self.direccion += 180
 
 # Creo ventana
 raiz = tk.Tk()
