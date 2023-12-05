@@ -1,4 +1,5 @@
 import random
+import math
 import tkinter as tk
 
 personas = []
@@ -22,7 +23,11 @@ class Persona():
             self.posy + self.radio/2,
             fill = self.color)
     def mueve(self):
-        lienzo.move(self.entidad,10,0)
+        lienzo.move(
+            self.entidad,
+            math.cos(self.direccion),
+            math.sin(self.direccion)
+            )
 
 # Creo ventana
 raiz = tk.Tk()
@@ -38,7 +43,7 @@ for persona in personas:
 def bucle():
     for persona in personas:
         persona.mueve()
-    raiz.after(100,bucle)
+    raiz.after(10,bucle)
 
 persona = Persona()      
 Persona.dibuja(persona)
