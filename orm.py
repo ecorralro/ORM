@@ -2,9 +2,9 @@ import json
 import random
 import math
 import tkinter as tk
+from tkinter import ttk
 
 personas = []
-numeropersonas = 50
 colores = ["red","blue","green"]
 
 # Creo objeto persona
@@ -49,6 +49,12 @@ def bucle():
     for persona in personas:
         persona.mueve()
     raiz.after(10,bucle)
+
+def agregar_personas():
+    for _ in range(5):
+        nueva_persona = Persona()
+        nueva_persona.dibuja()
+        personas.append(nueva_persona)
             
 def guardar_personas():
     print("Guardado")
@@ -65,8 +71,10 @@ lienzo = tk.Canvas(raiz,width=720,height=720)
 lienzo.pack()
 
 # creo un botón para guardar
-boton = tk.Button(raiz, text="Guardar",command = guardar_personas)
+boton = ttk.Button(raiz, text="Guardar",command = guardar_personas)
 boton.pack()
+botonadd = ttk.Button(raiz, text="+ 5",command=agregar_personas)
+botonadd.pack(pady=5)
 # Cargar personas existentes desde el archivo
 try:
     carga = open("jugadores.json",'r')
@@ -81,7 +89,7 @@ except:
     
 # Creo todo el número de personas y las dibujo
 if len(personas) == 0:
-    numeropersonas = 50
+    numeropersonas = 5
     for i in range(0,numeropersonas):
         personas.append(Persona())
 for persona in personas:
