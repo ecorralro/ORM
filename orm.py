@@ -4,14 +4,15 @@ import math
 import tkinter as tk
 
 personas = []
-numeropersonas = 20
+numeropersonas = 50
+colores = ["red","blue","green"]
 
 # Creo objeto persona
 class Persona():
     def __init__(self):
         self.posx = random.randint(0,720)
         self.posy = random.randint(0,720)
-        self.color = "red"
+        self.color = random.choice(colores)
         self.radio = 25
         self.direccion = random.randint(0,360)
         self.entidad = ""
@@ -27,19 +28,35 @@ class Persona():
         self.rebote()
         lienzo.move(
             self.entidad,
-            math.cos(self.direccion),
-            math.sin(self.direccion)
+            math.cos(self.direccion) * self.velocidad_color(),
+            math.sin(self.direccion) * self.velocidad_color()
             )
-        self.posx += math.cos(self.direccion)
-        self.posy += math.sin(self.direccion)
+        self.posx += math.cos(self.direccion) * self.velocidad_color()
+        self.posy += math.sin(self.direccion) * self.velocidad_color()
     def rebote(self):
         if self.posx < 0 or self.posx > 720 or self.posy < 0 or self.posy > 720:
             self.direccion += math.pi
+    # Velocidad según color
+    def velocidad_color(self):
+        if self.color == "red":
+            return 1
+        elif self.color == "blue":
+            return 30
+        elif self.color == "green":
+            return 10
+# Creo un bucle para que esas personas se muevan
+def bucle():
+    for persona in personas:
+        persona.mueve()
+    raiz.after(10,bucle)
+            
 def guardar_personas():
     print("Guardado")
     cadena = json.dumps([vars(persona) for persona in personas])
     archivo = open("jugadores.json",'w')
     archivo.write(cadena)
+
+
 
 # Creo ventana
 raiz = tk.Tk()
@@ -50,20 +67,27 @@ lienzo.pack()
 # creo un botón para guardar
 boton = tk.Button(raiz, text="Guardar",command = guardar_personas)
 boton.pack()
+# Cargar personas existentes desde el archivo
+try:
+    carga = open("jugadores.json",'r')
+    cargado = carga.read()
+    cargado_lista = json.loads(cargado)
+    for elemento in cargado_lista:
+        persona = Persona()
+        persona.__dict__.update(elemento)
+        personas.append(persona)
+except:
+    print("error")
+    
 # Creo todo el número de personas y las dibujo
-for i in range(0,numeropersonas):
-    personas.append(Persona())
+if len(personas) == 0:
+    numeropersonas = 50
+    for i in range(0,numeropersonas):
+        personas.append(Persona())
 for persona in personas:
     persona.dibuja()
-# Creo un bucle para que esas personas se muevan
-def bucle():
-    for persona in personas:
-        persona.mueve()
-    raiz.after(10,bucle)
 
-persona = Persona()      
-Persona.dibuja(persona)
+# LLamamos a función bucle
 bucle()
-
-
+        
 raiz.mainloop()
