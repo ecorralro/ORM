@@ -61,13 +61,14 @@ def guardar_personas():
     cadena = json.dumps([vars(persona) for persona in personas])
     archivo = open("jugadores.json",'w')
     archivo.write(cadena)
+    archivo.close()
 
 
 
 # Creo ventana
 raiz = tk.Tk()
 # Creo un lienzo en esa ventana
-lienzo = tk.Canvas(raiz,width=720,height=720)
+lienzo = tk.Canvas(raiz,width=720,height=720,background="grey")
 lienzo.pack()
 
 # creo un botón para guardar
