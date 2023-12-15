@@ -73,7 +73,7 @@ def guardar_personas():
     cursor =conexion.cursor()
     for persona in personas:
         cursor.execute('''
-            INSERT INTO jugadores
+            INSERT OR REPLACE INTO jugadores
             VALUES (
                 NULL,
                 '''+str(persona.posx)+''',
@@ -101,6 +101,8 @@ boton.pack()
 botonadd = ttk.Button(raiz, text="+ 5",command=agregar_personas)
 botonadd.pack(pady=5)
 # Cargar personas existentes desde el archivo
+'''
+**CARGO DESDE UN .JSON**
 try:
     carga = open("jugadores.json",'r')
     cargado = carga.read()
@@ -111,6 +113,30 @@ try:
         personas.append(persona)
 except:
     print("error")
+'''
+# Cargar personas desde base de datos
+conexion = sqlite3.connect("jugadores.sqlite3")
+cursor = conexion.cursor()
+
+try:
+    # Ejecutar una consulta para obtener los datos de la base de datos
+    cursor.execute('SELECT * FROM jugadores')
+    
+    # Obtener los resultados de la consulta
+    resultados = cursor.fetchall()
+
+    # Recorrer los resultados y crear objetos Persona
+    for resultado in resultados:
+        persona = Persona()
+        persona.id,persona.posx, persona.posy, persona.color, persona.radio, persona.direccion, persona.entidad = resultado
+        personas.append(persona)
+
+except sqlite3.Error as e:
+    print("Error al cargar desde la base de datos:", e)
+
+finally:
+    # Cerrar la conexión a la base de datos
+    conexion.close()
     
 # Creo todo el número de personas y las dibujo
 if len(personas) == 0:
