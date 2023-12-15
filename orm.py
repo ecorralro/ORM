@@ -3,8 +3,11 @@ import random
 import math
 import tkinter as tk
 from tkinter import ttk
+import sqlite3
+
 
 personas = []
+numeropersonas = 5
 colores = ["red","blue","green","yellow"]
 
 # Creo objeto persona
@@ -59,11 +62,30 @@ def agregar_personas():
         personas.append(nueva_persona)
             
 def guardar_personas():
-    print("Guardado")
+    '''    
+    **GUARDADO EN .JSON**
     cadena = json.dumps([vars(persona) for persona in personas])
     archivo = open("jugadores.json",'w')
     archivo.write(cadena)
     archivo.close()
+ '''
+    conexion = sqlite3.connect("jugadores.sqlite3")
+    cursor =conexion.cursor()
+    for persona in personas:
+        cursor.execute('''
+            INSERT INTO jugadores
+            VALUES (
+                NULL,
+                '''+str(persona.posx)+''',
+                '''+str(persona.posy)+''',
+                "'''+str(persona.color)+'''",
+                '''+str(persona.radio)+''',
+                '''+str(persona.direccion)+''',
+                "'''+str(persona.entidad)+'''"         
+            )
+            ''')
+    conexion.commit()
+    conexion.close()
 
 
 
