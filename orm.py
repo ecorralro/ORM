@@ -94,6 +94,10 @@ def guardar_personas():
             ''')
     conexion.commit()
     conexion.close()
+# Creo nueva ventana para consultas
+def ventana_consultas():
+    ventana_consultas =tk.Toplevel(raiz,padx=60,pady=60)
+    ventana_consultas.title("Consultas")
 
 
 
@@ -107,6 +111,8 @@ lienzo.pack()
 boton = ttk.Button(raiz, text="Guardar",command = guardar_personas)
 boton.pack()
 botonadd = ttk.Button(raiz, text="+ 5",command=agregar_personas)
+botonadd.pack(pady=5)
+botonadd = ttk.Button(raiz, text="Consultas",command=ventana_consultas)
 botonadd.pack(pady=5)
 # Cargar personas existentes desde el archivo
 '''
@@ -128,20 +134,16 @@ cursor = conexion.cursor()
 
 try:
     # Ejecutar una consulta para obtener los datos de la base de datos
-    cursor.execute('SELECT * FROM jugadores')
-    
+    cursor.execute('SELECT * FROM jugadores') 
     # Obtener los resultados de la consulta
     resultados = cursor.fetchall()
-
     # Recorrer los resultados y crear objetos Persona
     for resultado in resultados:
         persona = Persona()
         persona.id,persona.posx, persona.posy, persona.color, persona.radio, persona.direccion, persona.entidad = resultado
         personas.append(persona)
-
 except sqlite3.Error as e:
     print("Error al cargar desde la base de datos:", e)
-
 finally:
     # Cerrar la conexión a la base de datos
     conexion.close()
