@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 personas = []
-colores = ["red","blue","green"]
+colores = ["red","blue","green","yellow"]
 
 # Creo objeto persona
 class Persona():
@@ -44,6 +44,8 @@ class Persona():
             return 30
         elif self.color == "green":
             return 10
+        elif self.color == "yellow":
+            return 100
 # Creo un bucle para que esas personas se muevan
 def bucle():
     for persona in personas:
