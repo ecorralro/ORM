@@ -8,7 +8,7 @@ import sqlite3
 
 personas = []
 numeropersonas = 5
-colores = ["red","blue","green","yellow"]
+colores = ["red","blue","green","yellow","orange","black","white","pink"]
 
 # Creo objeto persona
 class Persona():
@@ -49,6 +49,14 @@ class Persona():
             return 10
         elif self.color == "yellow":
             return 100
+        elif self.color == "orange":
+            return 15
+        elif self.color == "black":
+            return 5
+        elif self.color == "white":
+            return 20
+        elif self.color == "pink":
+            return 12
 # Creo un bucle para que esas personas se muevan
 def bucle():
     for persona in personas:
