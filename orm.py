@@ -3,6 +3,7 @@ import random
 import math
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import sqlite3
 
 
@@ -96,24 +97,76 @@ def guardar_personas():
     conexion.close()
 # Creo nueva ventana para consultas
 def ventana_consultas():
-    ventana_consultas =tk.Toplevel(raiz,padx=60,pady=60)
+    ventana_consultas =tk.Toplevel(raiz,padx=60,pady=60,background="grey")
     ventana_consultas.title("Consultas")
+    estilo=ttk.Style()
+    estilo.theme_use('clam')
+    estilo.configure('TLabel', background='#ffd699', font=('Arial', 12, 'bold'))
+    estilo.configure('TButton')
+    estilo.configure('Boton_rojo.TButton',background="red",foreground="red")
+    estilo.configure('Boton_azul.TButton',background="blue",foreground="blue")
+    estilo.configure('Boton_verde.TButton',background="green",foreground="green")
+    estilo.configure('Boton_amarillo.TButton',background="yellow",foreground="yellow")
+    estilo.configure('Boton_naranja.TButton',background="orange",foreground="orange")
+    estilo.configure('Boton_negro.TButton',background="black",foreground="black")
+    estilo.configure('Boton_blanco.TButton',background="white",foreground="white")
+    estilo.configure('Boton_rosa.TButton',background="pink",foreground="pink")
+
+    label_consulta = ttk.Label(ventana_consultas, text="Cuantos jugadores hay del color:",style='TLabel')
+    label_consulta.grid(row=0, column=0,columnspan=4, padx=5, pady=5, sticky=tk.N)
+
+    boton_rojo=ttk.Button(ventana_consultas,style='Boton_rojo.TButton',text="Rojo",command=lambda:consulta_personas_color("red"))
+    boton_rojo.grid(row=1,column=0, padx=5, pady=5, sticky=tk.W)
+    boton_azul=ttk.Button(ventana_consultas,style='Boton_azul.TButton',text="Azul",command=lambda:consulta_personas_color("blue"))
+    boton_azul.grid(row=1,column=1, padx=5, pady=5, sticky=tk.W)
+    boton_verde=ttk.Button(ventana_consultas,style='Boton_verde.TButton',text="Verde",command=lambda:consulta_personas_color("green"))
+    boton_verde.grid(row=1,column=2, padx=5, pady=5, sticky=tk.W)
+    boton_amarillo=ttk.Button(ventana_consultas,style='Boton_amarillo.TButton',text="Amarillo",command=lambda:consulta_personas_color("yellow"))
+    boton_amarillo.grid(row=1,column=3, padx=5, pady=5, sticky=tk.W)
+    boton_naranja=ttk.Button(ventana_consultas,style='Boton_naranja.TButton',text="Naranja",command=lambda:consulta_personas_color("orange"))
+    boton_naranja.grid(row=2,column=0, padx=5, pady=5, sticky=tk.W)
+    boton_negro=ttk.Button(ventana_consultas,style='Boton_negro.TButton',text="Negro",command=lambda:consulta_personas_color("black"))
+    boton_negro.grid(row=2,column=1, padx=5, pady=5, sticky=tk.W)
+    boton_blanco=ttk.Button(ventana_consultas,style='Boton_blanco.TButton',text="Blanco",command=lambda:consulta_personas_color("white"))
+    boton_blanco.grid(row=2,column=2, padx=5, pady=5, sticky=tk.W)
+    boton_rosa=ttk.Button(ventana_consultas,style='Boton_rosa.TButton',text="Rosa",command=lambda:consulta_personas_color("pink"))
+    boton_rosa.grid(row=2,column=3, padx=5, pady=5, sticky=tk.W)
+
+    ventana_consultas.mainloop()
+
+def consulta_personas_color(color):
+    conexion = sqlite3.connect("jugadores.sqlite3")
+    cursor =conexion.cursor()
+    cursor.execute('SELECT COUNT(*) FROM jugadores WHERE color=?',(color,)) # (color,) para q el valor se pase cómo una tupla y no pete
+
+    resultado = cursor.fetchone()
+    if resultado is not None:
+        cantidad_personas = resultado[0]
+        mensaje = f"Hay {cantidad_personas} jugadores del color {color}"
+        messagebox.showinfo("Consulta", mensaje)
+    else:
+        messagebox.showinfo("Consulta", f"No hay jugadores del color {color}")
+
+    conexion.commit()
+    conexion.close()
+
 
 
 
 # Creo ventana
 raiz = tk.Tk()
+raiz.title("Jugadores")
 # Creo un lienzo en esa ventana
 lienzo = tk.Canvas(raiz,width=720,height=720,background="grey")
 lienzo.pack()
 
 # creo un botón para guardar
 boton = ttk.Button(raiz, text="Guardar",command = guardar_personas)
-boton.pack()
-botonadd = ttk.Button(raiz, text="+ 5",command=agregar_personas)
-botonadd.pack(pady=5)
-botonadd = ttk.Button(raiz, text="Consultas",command=ventana_consultas)
-botonadd.pack(pady=5)
+boton.pack(side=tk.LEFT,padx=5)
+boton_agregar = ttk.Button(raiz, text="+ 5",command=agregar_personas)
+boton_agregar.pack(side=tk.LEFT,padx=5)
+boton_consultas = ttk.Button(raiz, text="Consultas",command=ventana_consultas)
+boton_consultas.pack(side=tk.LEFT,padx=5)
 # Cargar personas existentes desde el archivo
 '''
 **CARGO DESDE UN .JSON**
