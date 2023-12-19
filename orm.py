@@ -150,9 +150,6 @@ def consulta_personas_color(color):
     conexion.commit()
     conexion.close()
 
-
-
-
 # Creo ventana
 raiz = tk.Tk()
 raiz.title("Jugadores")
