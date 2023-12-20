@@ -11,7 +11,7 @@ personas = []
 numeropersonas = 5
 colores = ["red","blue","green","yellow","orange","black","white","pink"]
 
-# Creo objeto persona
+# Creo clase persona
 class Persona():
     def __init__(self):
         self.posx = random.randint(0,720)
@@ -63,7 +63,7 @@ def bucle():
     for persona in personas:
         persona.mueve()
     raiz.after(10,bucle)
-
+# Creo objeto persona
 def agregar_personas():
     for _ in range(5):
         nueva_persona = Persona()
@@ -157,7 +157,7 @@ raiz.title("Jugadores")
 lienzo = tk.Canvas(raiz,width=720,height=720,background="grey")
 lienzo.pack()
 
-# creo un botón para guardar
+# Creo botones con sus funciones
 boton = ttk.Button(raiz, text="Guardar",command = guardar_personas)
 boton.pack(side=tk.LEFT,padx=5)
 boton_agregar = ttk.Button(raiz, text="+ 5",command=agregar_personas)

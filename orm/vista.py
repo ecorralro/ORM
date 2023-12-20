@@ -1,0 +1,1 @@
+# recibe peticiones del user y los consulta con el modelo a través de la vista
