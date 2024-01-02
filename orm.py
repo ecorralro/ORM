@@ -167,7 +167,7 @@ def consulta_personas_color(color):
     cursor =conexion.cursor()
     try:
         # Obtener el ID del color
-        cursor.execute('SELECT id_equipo FROM equipos WHERE color = ?', (color,))
+        cursor.execute('SELECT id FROM equipos WHERE color = ?', (color,))
         color_id = cursor.fetchone()
 
         if color_id is not None:
