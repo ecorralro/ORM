@@ -87,24 +87,42 @@ def guardar_personas():
     # archivo = open("jugadores.json",'w')
     # archivo.write(cadena)
     # archivo.close()
-
     conexion = sqlite3.connect("jugadores.sqlite3")
-    cursor =conexion.cursor()
-    for persona in personas:
-        cursor.execute('''
-            INSERT OR REPLACE INTO jugadores
-            VALUES (
-                NULL,
-                '''+str(persona.posx)+''',
-                '''+str(persona.posy)+''',
-                "'''+str(persona.color)+'''",
-                '''+str(persona.radio)+''',
-                '''+str(persona.direccion)+''',
-                "'''+str(persona.entidad)+'''"         
-            )
-            ''')
-    conexion.commit()
-    conexion.close()
+    cursor = conexion.cursor()
+    try:
+        for persona in personas:
+            # Verificar si el equipo ya existe
+            cursor.execute('SELECT id_equipos FROM equipos WHERE color=? AND velocidad=?', (persona.color.nombre, persona.color.velocidad))
+            equipo_result = cursor.fetchone()
+
+            if equipo_result:
+                # El equipo ya existe, obtenemos su id
+                id_equipo = equipo_result[0]
+            else:
+                # El equipo no existe, lo insertamos y obtenemos su id
+                cursor.execute('INSERT INTO equipos (color, velocidad) VALUES (?, ?)', (persona.color.nombre, persona.color.velocidad))
+                id_equipo = cursor.lastrowid
+
+            # Insertar persona
+            cursor.execute('''
+                INSERT OR REPLACE INTO jugadores
+                VALUES (
+                    NULL,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )
+            ''', (persona.posx, persona.posy, id_equipo, persona.radio, persona.direccion, persona.entidad))
+
+        conexion.commit()
+        messagebox.showinfo("Guardado", "Datos guardados exitosamente.")
+    except sqlite3.Error as e:
+        messagebox.showerror("Error", f"Error al guardar en la base de datos: {e}")
+    finally:
+        conexion.close()
 # Creo nueva ventana para consultas
 def ventana_consultas():
     ventana_consultas =tk.Toplevel(raiz,padx=60,pady=60,background="grey")
@@ -194,13 +212,18 @@ cursor = conexion.cursor()
 
 try:
     # Ejecutar una consulta para obtener los datos de la base de datos
-    cursor.execute('SELECT * FROM jugadores') 
+    cursor.execute('''
+        SELECT jugadores.id, jugadores.posx, jugadores.posy, equipos.color, jugadores.radio, jugadores.direccion, jugadores.entidad
+        FROM jugadores
+        JOIN equipos ON jugadores.equipo_id = equipos.id_equipos
+    ''')
     # Obtener los resultados de la consulta
     resultados = cursor.fetchall()
     # Recorrer los resultados y crear objetos Persona
     for resultado in resultados:
         persona = Persona()
-        persona.id,persona.posx, persona.posy, persona.color, persona.radio, persona.direccion, persona.entidad = resultado
+        persona.id,persona.posx, persona.posy, color_nombre, persona.radio, persona.direccion, persona.entidad = resultado
+        persona.color = Color(color_nombre)
         personas.append(persona)
 except sqlite3.Error as e:
     print("Error al cargar desde la base de datos:", e)
