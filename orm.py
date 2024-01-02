@@ -81,8 +81,7 @@ def agregar_personas():
         nueva_persona.dibuja()
         personas.append(nueva_persona)
             
-def guardar_personas():
-       
+def guardar_personas():      
     # **GUARDADO EN .JSON**
     # cadena = json.dumps([vars(persona) for persona in personas])
     # archivo = open("jugadores.json",'w')
@@ -93,7 +92,7 @@ def guardar_personas():
     try:
         for persona in personas:
             # Verificar si el equipo ya existe
-            cursor.execute('SELECT id_equipos FROM equipos WHERE color=? AND velocidad=?', (persona.color.nombre, persona.color.velocidad))
+            cursor.execute('SELECT id FROM equipos WHERE color=? AND velocidad=?', (persona.color.nombre, persona.color.velocidad))
             equipo_result = cursor.fetchone()
 
             if equipo_result:
@@ -116,7 +115,7 @@ def guardar_personas():
                     ?,
                     ?
                 )
-            ''', (persona.posx, persona.posy, id_equipo, persona.radio, persona.direccion, persona.entidad))
+            ''', (persona.posx, persona.posy, persona.radio, persona.direccion, persona.entidad, id_equipo))
 
         conexion.commit()
         messagebox.showinfo("Guardado", "Datos guardados exitosamente.")
@@ -168,7 +167,7 @@ def consulta_personas_color(color):
     cursor =conexion.cursor()
     try:
         # Obtener el ID del color
-        cursor.execute('SELECT id_equipos FROM equipos WHERE color = ?', (color,))
+        cursor.execute('SELECT id_equipo FROM equipos WHERE color = ?', (color,))
         color_id = cursor.fetchone()
 
         if color_id is not None:
@@ -223,32 +222,33 @@ cursor = conexion.cursor()
 try:
     # Ejecutar una consulta para obtener los datos de la base de datos
     cursor.execute('''
-        SELECT jugadores.id, jugadores.posx, jugadores.posy, equipos.color, jugadores.radio, jugadores.direccion, jugadores.entidad
+        SELECT jugadores.posx, jugadores.posy, equipos.color, jugadores.radio, jugadores.direccion, jugadores.entidad
         FROM jugadores
-        JOIN equipos ON jugadores.id_equipo = equipos.id_equipos
+        JOIN equipos ON jugadores.id_equipo = equipos.id
     ''')
     # Obtener los resultados de la consulta
     resultados = cursor.fetchall()
     # Recorrer los resultados y crear objetos Persona
     for resultado in resultados:
         persona = Persona()
+        persona.posx, persona.posy, color_nombre, persona.radio, persona.direccion, persona.entidad = resultado
         persona.color = Color(color_nombre)
-        persona.id, persona.posx, persona.posy, color_nombre, persona.radio, persona.direccion, persona.entidad = resultado
         personas.append(persona)
+
 except sqlite3.Error as e:
     print("Error al cargar desde la base de datos:", e)
 finally:
     # Cerrar la conexión a la base de datos
     conexion.close()
 
-    
 # Creo todo el número de personas y las dibujo
 if len(personas) == 0:
     numeropersonas = 5
-    for i in range(0,numeropersonas):
+    for i in range(0, numeropersonas):
         personas.append(Persona())
 for persona in personas:
     persona.dibuja()
+
 
 # LLamamos a función bucle
 bucle()
