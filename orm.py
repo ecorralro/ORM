@@ -77,6 +77,7 @@ def bucle():
 def agregar_personas():
     for _ in range(5):
         nueva_persona = Persona()
+        nueva_persona.color = Color(random.choice(colores))
         nueva_persona.dibuja()
         personas.append(nueva_persona)
             
@@ -165,18 +166,27 @@ def ventana_consultas():
 def consulta_personas_color(color):
     conexion = sqlite3.connect("jugadores.sqlite3")
     cursor =conexion.cursor()
-    cursor.execute('SELECT COUNT(*) FROM jugadores WHERE color=?',(color,)) # (color,) para q el valor se pase cómo una tupla y no pete
+    try:
+        # Obtener el ID del color
+        cursor.execute('SELECT id_equipos FROM equipos WHERE color = ?', (color,))
+        color_id = cursor.fetchone()
 
-    resultado = cursor.fetchone()
-    if resultado is not None:
-        cantidad_personas = resultado[0]
-        mensaje = f"Hay {cantidad_personas} jugadores del color {color}"
-        messagebox.showinfo("Consulta", mensaje)
-    else:
-        messagebox.showinfo("Consulta", f"No hay jugadores del color {color}")
+        if color_id is not None:
+            color_id = color_id[0]
+            # Consultar la cantidad de jugadores del color
+            cursor.execute('SELECT COUNT(*) FROM jugadores WHERE id_equipo=?', (color_id,))
+            cantidad_personas = cursor.fetchone()[0]
 
-    conexion.commit()
-    conexion.close()
+            mensaje = f"Hay {cantidad_personas} jugadores del color {color}"
+            messagebox.showinfo("Consulta", mensaje)
+        else:
+            messagebox.showinfo("Consulta", f"No hay jugadores del color {color}")
+
+    except sqlite3.Error as e:
+        messagebox.showerror("Error", f"Error al realizar la consulta: {e}")
+
+    finally:
+        conexion.close()
 
 # Creo ventana
 raiz = tk.Tk()
@@ -215,21 +225,22 @@ try:
     cursor.execute('''
         SELECT jugadores.id, jugadores.posx, jugadores.posy, equipos.color, jugadores.radio, jugadores.direccion, jugadores.entidad
         FROM jugadores
-        JOIN equipos ON jugadores.equipo_id = equipos.id_equipos
+        JOIN equipos ON jugadores.id_equipo = equipos.id_equipos
     ''')
     # Obtener los resultados de la consulta
     resultados = cursor.fetchall()
     # Recorrer los resultados y crear objetos Persona
     for resultado in resultados:
         persona = Persona()
-        persona.id,persona.posx, persona.posy, color_nombre, persona.radio, persona.direccion, persona.entidad = resultado
         persona.color = Color(color_nombre)
+        persona.id, persona.posx, persona.posy, color_nombre, persona.radio, persona.direccion, persona.entidad = resultado
         personas.append(persona)
 except sqlite3.Error as e:
     print("Error al cargar desde la base de datos:", e)
 finally:
     # Cerrar la conexión a la base de datos
     conexion.close()
+
     
 # Creo todo el número de personas y las dibujo
 if len(personas) == 0:
