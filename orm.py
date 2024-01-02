@@ -11,15 +11,42 @@ personas = []
 numeropersonas = 5
 colores = ["red","blue","green","yellow","orange","black","white","pink"]
 
+# Creo objeto Color
+class Color():
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.velocidad = self.velocidad_color()
+    # Velocidad según color
+    def velocidad_color(self):    
+        if self.nombre == "red":
+            return 1
+        elif self.nombre == "blue":
+            return 30
+        elif self.nombre == "green":
+            return 10
+        elif self.nombre == "yellow":
+            return 100
+        elif self.nombre == "orange":
+            return 15
+        elif self.nombre == "black":
+            return 5
+        elif self.nombre == "white":
+            return 20
+        elif self.nombre == "pink":
+            return 12
 # Creo objeto persona
 class Persona():
     def __init__(self):
         self.posx = random.randint(0,720)
         self.posy = random.randint(0,720)
-        self.color = random.choice(colores)
+        self.color = self.crear_color()
         self.radio = 25
         self.direccion = random.randint(0,360)
         self.entidad = ""
+    def crear_color(self):
+        nombre_color = random.choice(colores)
+        return Color(nombre_color)
+    
 # Dibujo en el lienzo
     def dibuja(self):
         self.entidad = lienzo.create_oval(
@@ -27,37 +54,20 @@ class Persona():
             self.posy - self.radio/2,
             self.posx + self.radio/2,
             self.posy + self.radio/2,
-            fill = self.color)
+            fill = self.color.nombre)
     def mueve(self):
         self.rebote()
         lienzo.move(
             self.entidad,
-            math.cos(self.direccion) * self.velocidad_color(),
-            math.sin(self.direccion) * self.velocidad_color()
+            math.cos(self.direccion) * self.color.velocidad,
+            math.sin(self.direccion) * self.color.velocidad
             )
-        self.posx += math.cos(self.direccion) * self.velocidad_color()
-        self.posy += math.sin(self.direccion) * self.velocidad_color()
+        self.posx += math.cos(self.direccion) * self.color.velocidad
+        self.posy += math.sin(self.direccion) * self.color.velocidad
     def rebote(self):
         if self.posx < 0 or self.posx > 720 or self.posy < 0 or self.posy > 720:
             self.direccion += math.pi
-    # Velocidad según color
-    def velocidad_color(self):
-        if self.color == "red":
-            return 1
-        elif self.color == "blue":
-            return 30
-        elif self.color == "green":
-            return 10
-        elif self.color == "yellow":
-            return 100
-        elif self.color == "orange":
-            return 15
-        elif self.color == "black":
-            return 5
-        elif self.color == "white":
-            return 20
-        elif self.color == "pink":
-            return 12
+    
 # Creo un bucle para que esas personas se muevan
 def bucle():
     for persona in personas:
@@ -71,13 +81,13 @@ def agregar_personas():
         personas.append(nueva_persona)
             
 def guardar_personas():
-    '''    
-    **GUARDADO EN .JSON**
-    cadena = json.dumps([vars(persona) for persona in personas])
-    archivo = open("jugadores.json",'w')
-    archivo.write(cadena)
-    archivo.close()
- '''
+       
+    # **GUARDADO EN .JSON**
+    # cadena = json.dumps([vars(persona) for persona in personas])
+    # archivo = open("jugadores.json",'w')
+    # archivo.write(cadena)
+    # archivo.close()
+
     conexion = sqlite3.connect("jugadores.sqlite3")
     cursor =conexion.cursor()
     for persona in personas:
